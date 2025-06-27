@@ -1,0 +1,23 @@
+#cloud-config
+package_update: true
+runcmd:
+  - curl -1sLf 'https://repositories.timber.io/public/vector/cfg/setup/bash.deb.sh' | bash
+  - apt-get install -y vector
+  - echo 'sources:
+      logs:
+        type: file
+        include:
+          - /var/log/syslog
+    sinks:
+      clickhouse:
+        type: clickhouse
+        inputs: [logs]
+        endpoint: http://${clickhouse_ip}:8123
+        database: default
+        table: logs
+        auth:
+          strategy: basic
+          user: default
+          password: ""' > /etc/vector/vector.yaml
+  - systemctl enable vector
+  - systemctl start vector

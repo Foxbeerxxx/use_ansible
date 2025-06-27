@@ -1,0 +1,10 @@
+#cloud-config
+package_update: true
+runcmd:
+  - apt-get install -y git docker.io docker-compose
+  - systemctl start docker
+  - systemctl enable docker
+  - git clone https://github.com/VKCOM/lighthouse.git /opt/lighthouse
+  - cp /opt/lighthouse/.env.example /opt/lighthouse/.env
+  - sed -i 's|CLICKHOUSE_HOST=.*|CLICKHOUSE_HOST=http://${clickhouse_ip}:8123|' /opt/lighthouse/.env
+  - docker-compose -f /opt/lighthouse/docker-compose.yml up -d

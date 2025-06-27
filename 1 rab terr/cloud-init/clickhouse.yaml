@@ -1,0 +1,10 @@
+#cloud-config
+package_update: true
+runcmd:
+  - apt-get install -y apt-transport-https ca-certificates dirmngr
+  - apt-key adv --keyserver keyserver.ubuntu.com --recv E0C56BD4
+  - echo "deb https://packages.clickhouse.com/deb stable main" > /etc/apt/sources.list.d/clickhouse.list
+  - apt-get update
+  - apt-get install -y clickhouse-server clickhouse-client
+  - systemctl enable clickhouse-server
+  - systemctl start clickhouse-server
