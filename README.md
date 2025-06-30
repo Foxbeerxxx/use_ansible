@@ -83,65 +83,103 @@ Failed: 11 failure(s), 0 warning(s) on 1 files. Last profile that met the valida
 
 ![3](https://github.com/Foxbeerxxx/use_ansible/blob/main/img/img3.png)
 
-8. `Заполните здесь этапы выполнения, если требуется ....`
-9. `Заполните здесь этапы выполнения, если требуется ....`
-10. `Заполните здесь этапы выполнения, если требуется ....`
-11. 
-
+8. `Затем ansible-playbook -i prod.yml site.yml --diff`
 ```
-Поле для вставки кода...
-....
-....
-....
-....
+Вывод
+alexey@dellalexey:~/ansible_new/use_ansible$ ansible-playbook -i prod.yml site.yml --diff
+
+PLAY [Deploy Lighthouse static UI] ************************************************************************************************
+
+TASK [Gathering Facts] ************************************************************************************************************
+[WARNING]: Platform linux on host lighthouse-01 is using the discovered Python interpreter at /usr/bin/python3.12, but future
+installation of another Python interpreter could change the meaning of that path. See https://docs.ansible.com/ansible-
+core/2.18/reference_appendices/interpreter_discovery.html for more information.
+ok: [lighthouse-01]
+
+TASK [Install dependencies] *******************************************************************************************************
+The following additional packages will be installed:
+  nginx-common
+Suggested packages:
+  fcgiwrap nginx-doc ssl-cert
+The following NEW packages will be installed:
+  nginx nginx-common
+0 upgraded, 2 newly installed, 0 to remove and 12 not upgraded.
+changed: [lighthouse-01]
+
+TASK [Download Lighthouse static archive] *****************************************************************************************
+changed: [lighthouse-01]
+
+TASK [Ensure /var/www exists] *****************************************************************************************************
+ok: [lighthouse-01]
+
+TASK [Ensure destination dir exists] **********************************************************************************************
+--- before
++++ after
+@@ -1,4 +1,4 @@
+ {
+     "path": "/var/www/lighthouse",
+-    "state": "absent"
++    "state": "directory"
+ }
+
+changed: [lighthouse-01]
+
+TASK [Extract Lighthouse archive] *************************************************************************************************
+changed: [lighthouse-01]
+
+TASK [Configure nginx for Lighthouse] *********************************************************************************************
+--- before
++++ after: /home/alexey/.ansible/tmp/ansible-local-41046lpqjqd05/tmpc1s2wv6n/lighthouse_nginx.conf.j2
+@@ -0,0 +1,11 @@
++server {
++    listen 80;
++    server_name _;
++
++    root /var/www/lighthouse/lighthouse-master;
++    index index.html;
++
++    location / {
++        try_files $uri $uri/ /index.html =404;
++    }
++}
+
+changed: [lighthouse-01]
+
+TASK [Enable nginx site] **********************************************************************************************************
+--- before
++++ after
+@@ -1,4 +1,4 @@
+ {
+     "path": "/etc/nginx/sites-enabled/lighthouse.conf",
+-    "state": "absent"
++    "state": "link"
+ }
+
+changed: [lighthouse-01]
+
+TASK [Disable default site] *******************************************************************************************************
+--- before
++++ after
+@@ -1,4 +1,4 @@
+ {
+     "path": "/etc/nginx/sites-enabled/default",
+-    "state": "link"
++    "state": "absent"
+ }
+
+changed: [lighthouse-01]
+
+TASK [Ensure nginx is running] ****************************************************************************************************
+ok: [lighthouse-01]
+
+RUNNING HANDLER [Reload nginx] ****************************************************************************************************
+changed: [lighthouse-01]
+
+PLAY RECAP ************************************************************************************************************************
+lighthouse-01              : ok=11   changed=8    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 ```
 
-`При необходимости прикрепитe сюда скриншоты
-![Название скриншота 2](ссылка на скриншот 2)`
+9. `Повторно запускаю ansible-playbook -i prod.yml site.yml --diff и убеждаюсь что они идемпотентен `
 
+![4](https://github.com/Foxbeerxxx/use_ansible/blob/main/img/img4.png)
 
----
-
-### Задание 3
-
-`Приведите ответ в свободной форме........`
-
-1. `Заполните здесь этапы выполнения, если требуется ....`
-2. `Заполните здесь этапы выполнения, если требуется ....`
-3. `Заполните здесь этапы выполнения, если требуется ....`
-4. `Заполните здесь этапы выполнения, если требуется ....`
-5. `Заполните здесь этапы выполнения, если требуется ....`
-6. 
-
-```
-Поле для вставки кода...
-....
-....
-....
-....
-```
-
-`При необходимости прикрепитe сюда скриншоты
-![Название скриншота](ссылка на скриншот)`
-
-### Задание 4
-
-`Приведите ответ в свободной форме........`
-
-1. `Заполните здесь этапы выполнения, если требуется ....`
-2. `Заполните здесь этапы выполнения, если требуется ....`
-3. `Заполните здесь этапы выполнения, если требуется ....`
-4. `Заполните здесь этапы выполнения, если требуется ....`
-5. `Заполните здесь этапы выполнения, если требуется ....`
-6. 
-
-```
-Поле для вставки кода...
-....
-....
-....
-....
-```
-
-`При необходимости прикрепитe сюда скриншоты
-![Название скриншота](ссылка на скриншот)`
