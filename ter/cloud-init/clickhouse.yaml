@@ -1,3 +1,13 @@
+
+#cloud-config
+users:
+  - name: alexey
+    shell: /bin/bash
+    groups: docker
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMqSVXDvPdBOlA2bdW7MHauhCEoxkRZmyx5FuH/s70XO tatarincev0810@gmail.com
+
 #cloud-config
 package_update: true
 runcmd:

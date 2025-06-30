@@ -1,0 +1,72 @@
+---
+- name: Deploy Lighthouse static UI
+  hosts: lighthouse
+  become: true
+  vars:
+    lh_url: "https://github.com/VKCOM/lighthouse/archive/refs/heads/master.tar.gz"
+    lh_dest: "/var/www/lighthouse"
+  tasks:
+    - name: Install dependencies
+      ansible.builtin.apt:
+        name:
+          - nginx
+          - curl
+          - tar
+        state: present
+        update_cache: true
+
+    - name: Download Lighthouse static archive
+      ansible.builtin.get_url:
+        url: "{{ lh_url }}"
+        dest: "/tmp/lighthouse.tar.gz"
+        mode: '0644'
+
+    - name: Ensure /var/www exists
+      ansible.builtin.file:
+        path: /var/www
+        state: directory
+        mode: '0755'
+
+    - name: Ensure destination dir exists
+      ansible.builtin.file:
+        path: "{{ lh_dest }}"
+        state: directory
+        mode: '0755'
+
+    - name: Extract Lighthouse archive
+      ansible.builtin.unarchive:
+        src: "/tmp/lighthouse.tar.gz"
+        dest: "{{ lh_dest }}"
+        remote_src: true
+        creates: "{{ lh_dest }}/lighthouse-master/index.html"
+
+    - name: Configure nginx for Lighthouse
+      ansible.builtin.template:
+        src: lighthouse_nginx.conf.j2
+        dest: /etc/nginx/sites-available/lighthouse.conf
+        mode: '0644'
+      notify: Reload nginx
+
+    - name: Enable nginx site
+      ansible.builtin.file:
+        src: /etc/nginx/sites-available/lighthouse.conf
+        dest: /etc/nginx/sites-enabled/lighthouse.conf
+        state: link
+        force: true
+
+    - name: Disable default site
+      ansible.builtin.file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+
+    - name: Ensure nginx is running
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
+
+  handlers:
+    - name: Reload nginx
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded
